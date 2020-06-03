@@ -25,7 +25,7 @@ public class TaskService {
 
     public TaskResponse createATask(CreateTaskRequest request) {
         return restTemplate.postForObject(
-                appProperties.getBaseUrl() + "/v1/tasks",
+                appProperties.getBaseUrl() + "/rest/v1/tasks",
                 request,
                 TaskResponse.class
         );
@@ -33,7 +33,7 @@ public class TaskService {
 
     public Set<TaskResponse> getActiveTasks() {
         return restTemplate.exchange(
-                appProperties.getBaseUrl() + "/v1/tasks",
+                appProperties.getBaseUrl() + "/rest/v1/tasks",
                 GET,
                 null,
                 new ParameterizedTypeReference<Set<TaskResponse>>() {}
