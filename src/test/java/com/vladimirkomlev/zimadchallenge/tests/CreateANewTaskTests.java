@@ -18,55 +18,55 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @SpringBootTest
-class CreateATaskTests {
+class CreateANewTaskTests {
 
     @Autowired
     private TaskService taskService;
 
     @Test
-    void createATaskWithValidDataTest() {
+    void createANewTaskWithValidDataTest() {
         CreateTaskRequest request = randomValidTaskRequest();
         Set<TaskResponse> tasksBefore = taskService.getActiveTasks();
-        TaskResponse response = taskService.createATask(request);
+        TaskResponse createdTask = taskService.createATask(request);
         Set<TaskResponse> tasksAfter = taskService.getActiveTasks();
-        tasksBefore.add(response);
+        tasksBefore.add(createdTask);
 
         assertAll(
                 () -> assertEquals(
                         request.getContent(),
-                        response.getContent(),
+                        createdTask.getContent(),
                         "Content in the request is " + request.getContent() +
-                                " but in the response is " + response.getContent()
+                                " but in the response is " + createdTask.getContent()
                         ),
-                () -> assertNull(response.getLabelIds(), "Label ids field is not null"),
+                () -> assertNull(createdTask.getLabelIds(), "Label ids field is not null"),
                 () -> assertEquals(
                         request.getOrder(),
-                        response.getOrder(),
+                        createdTask.getOrder(),
                         "Order in the request is " + request.getOrder() +
-                                " but in the response is " + response.getOrder()
+                                " but in the response is " + createdTask.getOrder()
                         ),
                 () -> assertEquals(
                         request.getPriority(),
-                        response.getPriority(),
+                        createdTask.getPriority(),
                         "Priority in the request is " + request.getPriority() +
-                                " but in the response is " + response.getPriority()
+                                " but in the response is " + createdTask.getPriority()
                         ),
                 () -> assertEquals(
                         request.getProjectId(),
-                        response.getProjectId(),
+                        createdTask.getProjectId(),
                         "Project id in the request is " + request.getProjectId() +
-                                " but in the response is " + response.getProjectId()
+                                " but in the response is " + createdTask.getProjectId()
                         ),
                 () -> assertEquals(
                         request.getSectionId(),
-                        response.getSectionId(),
+                        createdTask.getSectionId(),
                         "Section id in the request is " + request.getSectionId() +
-                                " but in the response is " + response.getSectionId()
+                                " but in the response is " + createdTask.getSectionId()
                         ),
-                () -> assertFalse(response.isCompleted(), "Completed field should is true but should be false"),
-                () -> assertEquals(0, response.getParent(), "Parent field is not equal to 0"),
-                () -> assertEquals(0, response.getCommentCount(), "Comment count is not equal to 0"),
-                () -> assertEquals("https://todoist.com/showTask?id=" + response.getId(), response.getUrl()),
+                () -> assertFalse(createdTask.isCompleted(), "Completed field should is true but should be false"),
+                () -> assertEquals(0, createdTask.getParent(), "Parent field is not equal to 0"),
+                () -> assertEquals(0, createdTask.getCommentCount(), "Comment count is not equal to 0"),
+                () -> assertEquals("https://todoist.com/showTask?id=" + createdTask.getId(), createdTask.getUrl()),
                 () -> assertEquals(tasksBefore, tasksAfter, "Task is not created")
         );
     }
@@ -74,18 +74,18 @@ class CreateATaskTests {
     @Test
     void createTwoTasksWithTheSameContentTest() {
         CreateTaskRequest firstRequest = randomValidTaskRequest();
-        TaskResponse firstResponse = taskService.createATask(firstRequest);
-        CreateTaskRequest secondRequest = randomValidTaskRequest().withContent(firstRequest.getContent());
+        TaskResponse firstTask = taskService.createATask(firstRequest);
+        CreateTaskRequest secondTask = randomValidTaskRequest().withContent(firstRequest.getContent());
         Set<TaskResponse> tasksBefore = taskService.getActiveTasks();
-        TaskResponse secondResponse = taskService.createATask(secondRequest);
+        TaskResponse secondResponse = taskService.createATask(secondTask);
         Set<TaskResponse> tasksAfter = taskService.getActiveTasks();
         tasksBefore.add(secondResponse);
 
         assertAll(
                 () -> assertEquals(
-                        firstResponse.getContent(),
+                        firstTask.getContent(),
                         secondResponse.getContent(),
-                        "Content in the first response is " + firstResponse.getContent() +
+                        "Content in the first response is " + firstTask.getContent() +
                                 " but in the second response is " + secondResponse.getContent()
                         ),
                 () -> assertEquals(tasksBefore, tasksAfter, "Task should not be created")
@@ -98,7 +98,7 @@ class CreateATaskTests {
 
     @ParameterizedTest
     @MethodSource("params")
-    void createATaskWithInvalidContentTest(final String content) {
+    void createANewTaskWithInvalidContentTest(final String content) {
         CreateTaskRequest request = randomValidTaskRequest().withContent(content);
         Set<TaskResponse> tasksBefore = taskService.getActiveTasks();
         HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
